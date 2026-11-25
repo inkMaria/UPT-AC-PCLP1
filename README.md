@@ -26,6 +26,14 @@ Un program în **C** care își citește propriul cod sursă și îl copiază î
 1. Mi-a explicat de ce fscanf + fprintf("%s") nu merg pentru copiat cod și cum funcționează concret perechea fgets + fputs.
 2. Mi-a dat hint-ul cu închiderea separată a fișierelor pe ramura de eroare (if (f != NULL) fclose(f);).
 3. M-a ajutat să structurez acest README.md.
+###
+## Proces & Timp de gândire (~30 min)
+
+Înainte și după ce am scris codul, mi-am luat cam **30 de minute** doar ca să înțeleg raționamentul din spate, nu doar sintaxa:
+
+- **De ce `__FILE__` și nu un nume hardcodat?** Pentru că programul își cunoaște singur sursa la compilare, indiferent cum redenumesc fișierul `.c`.
+- **De ce ordinea `deschid -> verific -> copiez -> închid`?** Ca să nu ajung în *segmentation fault* pe un pointer `NULL` și să nu las fișiere deschise pe ramura de eroare.
+- **Cum circulă datele în `while`?** `fgets` aduce câte o bucată din sursă (cu tot cu `\n`), iar `fputs` o varsă exact la fel în `fisier.txt`, fără să piardă indentarea sau spațiile.
 
 ## Compilare și rulare
 
