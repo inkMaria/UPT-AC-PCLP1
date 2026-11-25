@@ -1,5 +1,5 @@
 # Tema 2 
-##— Exercițiul 1: Programul „narcisist” (`p1.c`)
+## — Exercițiul 1: Programul „narcisist” (`p1.c`)
 Un program în **C** care își citește propriul cod sursă și îl copiază într-un fișier text (`fisier.txt`), păstrând structura liniilor și formatarea.
 
 ---
