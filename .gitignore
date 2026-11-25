@@ -1,0 +1,22 @@
+# Executabile compilate (sa nu urcam binare pe git)
+*.exe
+*.out
+*.app
+*.o
+*.obj
+*.pdb
+*.ilk
+levenshtein
+
+# Foldere generate de Visual Studio / VS Code / build-uri
+.vs/
+.vscode/
+x64/
+x86/
+Debug/
+Release/
+build/
+
+# Mizerii temporare de sistem
+.DS_Store
+Thumbs.db
