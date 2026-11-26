@@ -35,6 +35,55 @@ Un program în **C** care își citește propriul cod sursă și îl copiază î
 - **De ce ordinea `deschid -> verific -> copiez -> închid`?** Ca să nu ajung în *segmentation fault* pe un pointer `NULL` și să nu las fișiere deschise pe ramura de eroare.
 - **Cum circulă datele în `while`?** `fgets` aduce câte o bucată din sursă (cu tot cu `\n`), iar `fputs` o varsă exact la fel în `fisier.txt`, fără să piardă indentarea sau spațiile.
 
+## — Problema 2 (`p2.c`): Testare Automată a Cuvintelor
+
+### Descriere
+Programul citește o listă de cuvinte (câte unul pe rând) dintr-un fișier text de intrare (`fisierul_cu_cuvintele.txt`) și rulează automat **20 de teste de validare și analiză** pe fiecare cuvânt.
+
+Pentru fiecare cuvânt procesat, programul creează un director dedicat în `teste_fisier/<cuvant>/` și generează câte un fișier individual pentru fiecare test (`test_<cuvant>_<nr_test>.txt`), conținând:
+* numele testului executat,
+* cuvântul testat,
+* statusul (`TRECUT` sau `PICAT`),
+* autorul rulării (`Maria`),
+* data și ora exactă a execuției (`YYYY-MM-DD HH:MM:SS`).
+
+### Wall of Shame & Lecții învățate
+1. Cod executabil în afara funcțiilor: la început am pus if (f == NULL) și mkdir(...) direct în zona globală, înainte de main() (expected identifier or '(' la compilare).
+2. switch (i < 20) și switch (NR_TESTE): expresia i < 20 dă doar 0 sau 1, iar NR_TESTE e constantă (20), deci nu intra niciodată în case 1..19; am înlocuit complet switch-ul cu un vector de pointeri la funcții.
+3. Conflictul de nume *teste(s, i): aveam și funcția teste() și vectorul const char *teste[] în main(), plus un * în față pe o funcție void.
+4. Capcana <ctype.h> și modificarea șirului original: în testul de palindrom suprascriam direct s[k++] (ceea ce strica cuvântul pentru restul testelor) și folosisem tolower/isalpha din <ctype.h>; am rescris toate verificările manual pe coduri ASCII ('a'..'z', 'A'..'Z', '0'..'9').
+5. Cursorul la final după afișare (EOF) și /n în loc de \n: la opțiunea y, primul while citea fișierul până la capăt, iar al doilea while nu mai genera niciun test până nu am pus rewind(f); între ele.
+### Împărțirea muncii (cine ce a făcut)
+#### Ce am făcut eu:
+1. Am stabilit arhitectura temei, lista celor 20 de teste inspirate din cursul și laboratorul de șiruri de caractere și organizarea pe foldere cu `mkdir` pe Linux.
+2. Am venit cu ideea să înlocuim macro-ul `#define` propus inițial de AI cu o funcție `void scrie_test(...)` (mai sigură, cu verificare de tipuri și fără cod duplicat) și să scăpăm de `switch`-ul repetitiv.
+3. Am impus restricția de laborator fără `<ctype.h>` și am integrat citirea din fișier, constantele (`Autor`, `NR_TESTE`) și meniul interactiv (`y/n`) pentru afișarea cuvintelor în consolă.
+4. Am testat programul pe Linux, am depistat bug-urile pe parcurs (de la fișierul lipsă până la `/n` și cursorul rămas la final după afișare) și am curățat varianta finală.
+
+#### Ce a făcut AI-ul (Gemini):
+1. A venit inițial cu varianta pe `#define` și `switch` (pe care am refuzat-o ulterior în favoarea unei variante mai elegante).
+2. M-a ajutat să structurez vectorul de pointeri la funcții (`int (*functii_test[20])(const char *)`) și a scris corpul funcțiilor de test pe coduri ASCII.
+3. Mi-a semnalat bug-ul cu cursorul ajuns la `EOF` după opțiunea `y` (rezolvat cu `rewind(f)`) și a generat lista de 100 de cuvinte de test.
+
+### Proces & Timp de gândire (~1h 30 min)
+De ce vector de pointeri la funcții în loc de switch? Pentru că 20 de case-uri într-o singură funcție sunt greu de urmărit și ușor de greșit; cu un vector de funcții, bucla din main are doar 4 linii.
+
+De ce fără <ctype.h>? Pentru a respecta cerința de laborator de a manipula caracterele direct prin aritmetică pe coduri ASCII (c - 'A' + 'a', intervale 'a'..'z', '0'..'9').
+
+De ce rewind(f) după switch? Pentru că un singur FILE * păstrează poziția cursorului în fișier; după prima parcurgere pentru afișare, cursorul rămâne la EOF și trebuie readus la început pentru rularea testelor
+### Structura proiectului
+```text
+TEMA2/
+├── p2.c                        # Codul sursă principal
+├── fisierul_cu_cuvintele.txt   # Fișierul de intrare (100 de cuvinte, unul pe linie)
+├── README.md                   # Documentația proiectului
+└── teste_fisier/               # Director generat automat la rulare
+    └── <cuvant>/
+        ├── test_<cuvant>_1.txt
+        ├── test_<cuvant>_2.txt
+        └── ... (până la test 20)
+```  
+
 ## Compilare și rulare
 
 ```bash
